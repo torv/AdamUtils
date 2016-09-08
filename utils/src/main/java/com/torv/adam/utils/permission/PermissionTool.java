@@ -7,6 +7,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
+import com.torv.adam.utils.log.L;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class PermissionTool {
     }
 
     public static boolean checkNeedRequestPermission(String[] permissions) {
+        L.d("E");
         if (null == permissions) {
             return false;
         }
@@ -43,11 +46,32 @@ public class PermissionTool {
                 return true;
             }
         }
+        L.d("X");
         return false;
     }
 
-    public static boolean checkNeedShowTips() {
-        return false;
+    public static void checkNeedShowRationable(Activity activity, String[] permissions, IRationableResultCallback callback) {
+        L.d("E");
+        if(null != permissions) {
+            List<String> needShowRationablePermissions = new ArrayList<>();
+            List<String> needRequestPermissions = new ArrayList<>();
+
+            for(String per : permissions) {
+                if(!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(activity, per)) {
+                        needShowRationablePermissions.add(per);
+                    } else {
+                        needRequestPermissions.add(per);
+                    }
+                }
+            }
+
+            if(null != callback) {
+                callback.onNeedShowRationablePermissions(needShowRationablePermissions);
+                callback.onNeedRequestPermissions(needRequestPermissions);
+            }
+        }
+        L.d("X");
     }
 
     public static void requestPermission(Activity activity, String[] permissions){
@@ -96,5 +120,10 @@ public class PermissionTool {
     public interface IGrantResultCallback{
         public void onGrantedPermissions(List<String> grantedPermissions);
         public void onDeniedPermissions(List<String> deniedPermissions);
+    }
+
+    public interface IRationableResultCallback{
+        public void onNeedShowRationablePermissions(List<String> rationablePermisssions);
+        public void onNeedRequestPermissions(List<String> needRequestPermisssions);
     }
 }

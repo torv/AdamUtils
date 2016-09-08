@@ -5,6 +5,7 @@ import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.torv.adam.utils.log.L;
 import com.torv.adam.utils.permission.PermissionTool;
@@ -22,7 +23,20 @@ public class MainActivity extends AppCompatActivity {
         L.d("LifeCycle");
 
         if(PermissionTool.checkNeedRequestPermission(PERMISSIONS)) {
-            PermissionTool.requestPermission(MainActivity.this, PERMISSIONS);
+            PermissionTool.checkNeedShowRationable(MainActivity.this, PERMISSIONS, new PermissionTool.IRationableResultCallback() {
+                @Override
+                public void onNeedShowRationablePermissions(List<String> rationablePermisssions) {
+                    Toast.makeText(MainActivity.this, "Grant permisson to get better Service!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onNeedRequestPermissions(List<String> needRequestPermisssions) {
+                    int size = needRequestPermisssions.size();
+                    if(size > 0) {
+                        PermissionTool.requestPermission(MainActivity.this, needRequestPermisssions.toArray(new String[size]));
+                    }
+                }
+            });
         }
     }
 
