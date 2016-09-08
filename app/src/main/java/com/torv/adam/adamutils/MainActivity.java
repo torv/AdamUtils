@@ -1,12 +1,15 @@
 package com.torv.adam.adamutils;
 
 import android.Manifest;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
+import com.torv.adam.utils.asyncjob.SafeThread;
 import com.torv.adam.utils.log.L;
 import com.torv.adam.utils.permission.PermissionTool;
 
@@ -90,5 +93,21 @@ public class MainActivity extends AppCompatActivity {
                 L.d(deniedPermissions.toString());
             }
         });
+    }
+
+    public void safeThreadTest(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SafeThread safeThread = new SafeThread();
+                safeThread.start();
+                try {
+                    Thread.sleep(12000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                safeThread.safeStop();
+            }
+        }).start();
     }
 }
