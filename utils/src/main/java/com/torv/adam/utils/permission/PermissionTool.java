@@ -22,10 +22,10 @@ public class PermissionTool {
     private static int REQUEST_CODE = 0x87;
 
     public static void setAppContext(Context context) {
-        if(null == context){
+        if (null == context) {
             throw new NullPointerException("You should pass a valid context");
         }
-        if(context instanceof Activity) {
+        if (context instanceof Activity) {
             throw new UnsupportedOperationException("please set Application context here, to avoid memory leak!!");
         }
         mAppCtx = context;
@@ -37,12 +37,12 @@ public class PermissionTool {
             return false;
         }
 
-        if(null == mAppCtx) {
+        if (null == mAppCtx) {
             throw new UnsupportedOperationException("please call setAppContext first");
         }
 
         for (String per : permissions) {
-            if(!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
+            if (!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
                 return true;
             }
         }
@@ -52,13 +52,13 @@ public class PermissionTool {
 
     public static void checkNeedShowRationable(Activity activity, String[] permissions, IRationableResultCallback callback) {
         L.d("E");
-        if(null != permissions) {
+        if (null != permissions) {
             List<String> needShowRationablePermissions = new ArrayList<>();
             List<String> needRequestPermissions = new ArrayList<>();
 
-            for(String per : permissions) {
-                if(!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(activity, per)) {
+            for (String per : permissions) {
+                if (!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(activity, per)) {
                         needShowRationablePermissions.add(per);
                     } else {
                         needRequestPermissions.add(per);
@@ -66,7 +66,7 @@ public class PermissionTool {
                 }
             }
 
-            if(null != callback) {
+            if (null != callback) {
                 callback.onNeedShowRationablePermissions(needShowRationablePermissions);
                 callback.onNeedRequestPermissions(needRequestPermissions);
             }
@@ -74,20 +74,20 @@ public class PermissionTool {
         L.d("X");
     }
 
-    public static void requestPermission(Activity activity, String[] permissions){
+    public static void requestPermission(Activity activity, String[] permissions) {
         requestPermission(activity, permissions, REQUEST_CODE);
     }
 
-    public static void requestPermission(Activity activity, String[] permissions, int requestCode){
-        if(null == mAppCtx) {
+    public static void requestPermission(Activity activity, String[] permissions, int requestCode) {
+        if (null == mAppCtx) {
             throw new UnsupportedOperationException("please call setAppContext first");
         }
 
         REQUEST_CODE = requestCode;
-        if(null != permissions) {
+        if (null != permissions) {
             List<String> permissionNeedRequest = new ArrayList<>();
-            for(String per : permissions) {
-                if(!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
+            for (String per : permissions) {
+                if (!TextUtils.isEmpty(per) && ContextCompat.checkSelfPermission(mAppCtx, per) != PackageManager.PERMISSION_GRANTED) {
                     permissionNeedRequest.add(per);
                 }
             }
@@ -95,21 +95,21 @@ public class PermissionTool {
         }
     }
 
-    public static void handleGrantResult(int requestCode, String[] permissions, int[] grantResults, IGrantResultCallback callback){
-        if(requestCode == REQUEST_CODE) {
-            if(null != permissions) {
+    public static void handleGrantResult(int requestCode, String[] permissions, int[] grantResults, IGrantResultCallback callback) {
+        if (requestCode == REQUEST_CODE) {
+            if (null != permissions) {
                 int size = permissions.length;
                 List<String> grantedPermissions = new ArrayList<>();
                 List<String> deniedPermissions = new ArrayList<>();
-                for(int i = 0 ; i < size ; i++){
-                    if(grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                for (int i = 0; i < size; i++) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         grantedPermissions.add(permissions[i]);
                     } else {
                         deniedPermissions.add(permissions[i]);
                     }
                 }
 
-                if(null != callback) {
+                if (null != callback) {
                     callback.onGrantedPermissions(grantedPermissions);
                     callback.onDeniedPermissions(deniedPermissions);
                 }
@@ -117,13 +117,15 @@ public class PermissionTool {
         }
     }
 
-    public interface IGrantResultCallback{
+    public interface IGrantResultCallback {
         public void onGrantedPermissions(List<String> grantedPermissions);
+
         public void onDeniedPermissions(List<String> deniedPermissions);
     }
 
-    public interface IRationableResultCallback{
+    public interface IRationableResultCallback {
         public void onNeedShowRationablePermissions(List<String> rationablePermisssions);
+
         public void onNeedRequestPermissions(List<String> needRequestPermisssions);
     }
 }
